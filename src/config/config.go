@@ -1,0 +1,33 @@
+package config
+
+import (
+	"os"
+	"encoding/json"
+	"log"
+	"github.com/xsank/EasyProxy/src/structure"
+)
+
+type Config struct {
+	Service  string `json:"service"`
+	Host     string `json:"host"`
+	Port     uint16 `json:"port"`
+	Strategy string `json:"strategy"`
+	Backends []structure.Backend `json:"backends"`
+}
+
+func Load(filename string) (Config, error) {
+	var config Config
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Println("load config failed:", err)
+	} else {
+		buff := make([]byte, 1024)
+		end, _ := file.Read(buff)
+		err = json.Unmarshal(buff[:end], &config)
+		if err != nil {
+			log.Println("decode json config failed:", err)
+		}
+	}
+	return config, err
+}
+

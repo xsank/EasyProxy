@@ -1,4 +1,4 @@
-package net
+package gateway
 
 import (
 	"net"
@@ -24,7 +24,7 @@ func (server *ProxyServer) Init(config *config.Config) {
 }
 
 func (server *ProxyServer) setProxy(config *config.Config) {
-	server.proxy = &proxy.EasyProxy{}
+	server.proxy = new(proxy.EasyProxy)
 	server.proxy.Init(config)
 }
 
@@ -35,8 +35,7 @@ func (server ProxyServer) Address() string {
 func (server *ProxyServer) Start() {
 	local, err := net.Listen("tcp", server.Address())
 	if err != nil {
-		log.Println("proxy server start error:$s", err)
-		return
+		log.Panic("proxy server start error:$s", err)
 	}
 	log.Println("easyproxy server start ok")
 	defer local.Close()

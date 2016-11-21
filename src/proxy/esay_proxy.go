@@ -7,6 +7,7 @@ import (
 	"time"
 	"log"
 	"github.com/xsank/EasyProxy/src/config"
+	s"github.com/xsank/EasyProxy/src/structure"
 )
 
 const (
@@ -14,13 +15,16 @@ const (
 )
 
 type EasyProxy struct {
-	data     *ProxyData
-	strategy schedule.Strategy
+	data           *ProxyData
+	strategy       schedule.Strategy
+	channelManager *s.ChannelManager
 }
 
 func (proxy *EasyProxy) Init(config *config.Config) {
-	proxy.data = &ProxyData{}
+	proxy.data = new(ProxyData)
 	proxy.data.Init(config)
+	proxy.channelManager = new(s.ChannelManager)
+	proxy.channelManager.Init()
 	proxy.setStrategy(config.Strategy)
 }
 
@@ -63,6 +67,7 @@ func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 		log.Println("connect error:%s", err)
 		return
 	}
+	proxy.channelManager.PutChannelPair(local, remoteConn)
 	go io.Copy(local, remoteConn)
 	go io.Copy(remoteConn, local)
 }

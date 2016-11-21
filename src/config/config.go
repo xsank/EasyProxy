@@ -15,7 +15,7 @@ type Config struct {
 	Backends []structure.Backend `json:"backends"`
 }
 
-func Load(filename string) (Config, error) {
+func Load(filename string) (*Config, error) {
 	var config Config
 	file, err := os.Open(filename)
 	if err != nil {
@@ -28,6 +28,6 @@ func Load(filename string) (Config, error) {
 			log.Println("decode json config failed:", err)
 		}
 	}
-	return config, err
+	return &config, err
 }
 

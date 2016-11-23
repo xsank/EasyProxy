@@ -31,11 +31,11 @@ func (proxy *EasyProxy) Init(config *config.Config) {
 func (proxy *EasyProxy) setStrategy(name string) {
 	switch name {
 	case "random":
-		proxy.strategy = schedule.Random{}
+		proxy.strategy = new(schedule.Random)
 	case "poll":
-		proxy.strategy = &schedule.Poll{}
+		proxy.strategy = new(schedule.Poll)
 	default:
-		proxy.strategy = schedule.Random{}
+		proxy.strategy = new(schedule.Random)
 	}
 }
 
@@ -60,6 +60,11 @@ func (proxy *EasyProxy) Dispatch(con net.Conn) {
 	proxy.transfer(con, url)
 }
 
+func (proxy *EasyProxy) safeCopy(local net.Conn, remote net.Conn) {
+	io.Copy(local, remote)
+	defer local.Close()
+}
+
 func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime * time.Second)
 	if err != nil {
@@ -68,8 +73,8 @@ func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 		return
 	}
 	proxy.channelManager.PutChannelPair(local, remoteConn)
-	go io.Copy(local, remoteConn)
-	go io.Copy(remoteConn, local)
+	go proxy.safeCopy(local, remoteConn)
+	go proxy.safeCopy(remoteConn, local)
 }
 
 func (proxy *EasyProxy) Clean(url string) {

@@ -17,12 +17,10 @@ const (
 func main() {
 	log.Println("start building...")
 	flag.Parse()
-
 	if flag.NArg() == 0 {
 		log.Println("please use go run build.go to build")
 		return
 	}
-
 	for _, cmd := range flag.Args() {
 		switch cmd {
 		case "build":

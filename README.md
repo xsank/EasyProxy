@@ -1,16 +1,40 @@
 # EasyProxy
-a simple tcp proxy
+A simple proxy server.
 
+
+# Introduction
+```
+    +----------+                           +------------+
+    |  client  +<----+                     |            |
+    +----------+     +--->+-----+<-------->+   server   |
+                          |     |          |            |
+    +----------+          |     |          +------------+
+    |  client  +<-------->|     |
+    +----------+          |     |
+                          |     |          +------------+
+    +----------+          |  L  |          |            |
+    |  client  +<-------->|  B  |<-------->+   server   |
+    +----------+          |  S  |          |            |
+                          |     |          +------------+
+    +----------+          |     |
+    |  client  +<-------->|     |
+    +----------+          |     |          +------------+
+                          |     |          |            |
+    +----------+     +--->+-----+<-------->+   server   |
+    |  client  +<----+                     |            |
+    +----------+                           +------------+            
+```  
+As the chart above, easyproxy act as the LBS server. If you meet the situation that cannot access some
+service directly, you may use this to proxy.  
 
 # Usage
 
 ```bash
-git clone https://github.com/xsank/EasyProxy.git
-cd EasyProxy
+go get github.com/xsank/EasyProxy
 go run build.go build
 ```
-the sample config is about mysql proxy, you can easily modify the `default.json` to change the service.
+The sample config is about mysql proxy, you can easily modify the `default.json` to change the service.
 
 
 # License
-easyproxy is distributed under MIT License.
+Easyproxy is distributed under MIT License.

@@ -24,4 +24,5 @@ _testmain.go
 *.prof
 
 .idea/*
+bin/*
 *.iml

@@ -28,6 +28,7 @@ func Load(filename string) (*Config, error) {
 			log.Println("decode json config failed:", err)
 		}
 	}
+	log.Println("success load config file:", filename)
 	return &config, err
 }
 

@@ -1,7 +1,7 @@
 {
   "service": "mysql service",
   "host": "0.0.0.0",
-  "port": 9527,
+  "port": 9526,
   "strategy": "random",
   "backends": [
     {

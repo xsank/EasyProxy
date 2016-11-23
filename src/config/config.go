@@ -11,6 +11,7 @@ type Config struct {
 	Service  string `json:"service"`
 	Host     string `json:"host"`
 	Port     uint16 `json:"port"`
+	WebPort  uint16 `json:"webport"`
 	Strategy string `json:"strategy"`
 	Backends []structure.Backend `json:"backends"`
 }

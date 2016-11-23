@@ -6,6 +6,7 @@ import (
 	"github.com/xsank/EasyProxy/src/util"
 	"path/filepath"
 	"github.com/xsank/EasyProxy/src/log"
+	"github.com/xsank/EasyProxy/src/web"
 )
 
 const DefaultConfigFile = "conf/default.json"
@@ -16,6 +17,9 @@ func main() {
 	log.Init(DefaultLogFile)
 	config, err := config.Load(filepath.Join(homePath, DefaultConfigFile))
 	if err == nil {
+		webServer:=new(web.WebServer)
+		webServer.Init(config)
+		webServer.Start()
 		server := new(gw.ProxyServer)
 		server.Init(config)
 		server.Start()

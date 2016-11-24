@@ -6,30 +6,33 @@ import (
 )
 
 type ProxyData struct {
-	service  string
-	host     string
-	port     uint16
-	backends map[string]structure.Backend
-	deads    map[string]structure.Backend
+	Service        string
+	Host           string
+	Port           uint16
+	Backends       map[string]structure.Backend
+	Deads          map[string]structure.Backend
+	ChannelManager *structure.ChannelManager
 }
 
 func (proxyData *ProxyData) Init(config *config.Config) {
-	proxyData.service = config.Service
-	proxyData.host = config.Host
-	proxyData.port = config.Port
+	proxyData.Service = config.Service
+	proxyData.Host = config.Host
+	proxyData.Port = config.Port
+	proxyData.ChannelManager = new(structure.ChannelManager)
+	proxyData.ChannelManager.Init()
 	proxyData.setBackends(config.Backends)
 }
 
 func (proxyData *ProxyData) setBackends(backends []structure.Backend) {
-	proxyData.backends = make(map[string]structure.Backend)
+	proxyData.Backends = make(map[string]structure.Backend)
 	for _, backend := range backends {
-		proxyData.backends[backend.Url()] = backend
+		proxyData.Backends[backend.Url()] = backend
 	}
-	proxyData.deads = make(map[string]structure.Backend)
+	proxyData.Deads = make(map[string]structure.Backend)
 }
 
 func (proxyData ProxyData) BackendUrls() []string {
-	_map := proxyData.backends
+	_map := proxyData.Backends
 	keys := make([]string, 0, len(_map))
 	for k := range _map {
 		keys = append(keys, k)
@@ -38,11 +41,11 @@ func (proxyData ProxyData) BackendUrls() []string {
 }
 
 func (proxyData *ProxyData) cleanBackend(url string) {
-	delete(proxyData.backends, url)
-	proxyData.deads[url] = proxyData.backends[url]
+	delete(proxyData.Backends, url)
+	proxyData.Deads[url] = proxyData.Backends[url]
 }
 
 func (proxyData *ProxyData) cleanDeadend(url string) {
-	delete(proxyData.deads, url)
-	proxyData.backends[url] = proxyData.deads[url]
+	delete(proxyData.Deads, url)
+	proxyData.Backends[url] = proxyData.Deads[url]
 }

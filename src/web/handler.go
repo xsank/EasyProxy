@@ -2,13 +2,14 @@ package web
 
 import (
 	"net/http"
-	"fmt"
+	"github.com/xsank/EasyProxy/src/proxy"
 )
 
-const(
-	StatisticsUrl="/statistic"
+const (
+	StatisticsUrl = "/statistic"
 )
 
-func Statistic(writer http.ResponseWriter, request *http.Request){
-	fmt.Fprint(writer,"hello world")
+func Statistic(writer http.ResponseWriter, request *http.Request) {
+	proxy.Record()
+	Render(writer, "statistic", StatisticHtml, proxy.StatisticData())
 }

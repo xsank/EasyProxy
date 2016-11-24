@@ -3,7 +3,6 @@ package web
 import (
 	"github.com/xsank/EasyProxy/src/config"
 	"net/http"
-
 	"log"
 	"github.com/xsank/EasyProxy/src/util"
 )

@@ -7,7 +7,7 @@ import (
 	"time"
 	"log"
 	"github.com/xsank/EasyProxy/src/config"
-	s"github.com/xsank/EasyProxy/src/structure"
+	"github.com/xsank/EasyProxy/src/structure"
 )
 
 const (
@@ -15,17 +15,15 @@ const (
 )
 
 type EasyProxy struct {
-	data           *ProxyData
-	strategy       schedule.Strategy
-	channelManager *s.ChannelManager
+	data     *ProxyData
+	strategy schedule.Strategy
 }
 
 func (proxy *EasyProxy) Init(config *config.Config) {
 	proxy.data = new(ProxyData)
 	proxy.data.Init(config)
-	proxy.channelManager = new(s.ChannelManager)
-	proxy.channelManager.Init()
 	proxy.setStrategy(config.Strategy)
+	InitStatistic(proxy.data)
 }
 
 func (proxy *EasyProxy) setStrategy(name string) {
@@ -40,13 +38,13 @@ func (proxy *EasyProxy) setStrategy(name string) {
 }
 
 func (proxy *EasyProxy) Check() {
-	for _, backend := range proxy.data.backends {
+	for _, backend := range proxy.data.Backends {
 		_, err := net.Dial("tcp", backend.Url())
 		if err != nil {
 			proxy.Clean(backend.Url())
 		}
 	}
-	for _, deadend := range proxy.data.backends {
+	for _, deadend := range proxy.data.Deads {
 		_, err := net.Dial("tcp", deadend.Url())
 		if err == nil {
 			proxy.Recover(deadend.Url())
@@ -60,9 +58,21 @@ func (proxy *EasyProxy) Dispatch(con net.Conn) {
 	proxy.transfer(con, url)
 }
 
-func (proxy *EasyProxy) safeCopy(local net.Conn, remote net.Conn) {
-	io.Copy(local, remote)
-	defer local.Close()
+func (proxy *EasyProxy) safeCopy(from net.Conn, to net.Conn, sync chan int) {
+	io.Copy(from, to)
+	defer from.Close()
+	sync <- 1
+}
+
+func (proxy *EasyProxy) putChannel(channel *structure.Channel) {
+	proxy.data.ChannelManager.PutChannel(channel)
+}
+
+func (proxy *EasyProxy) closeChannel(channel *structure.Channel, sync chan int) {
+	for i := 0; i < structure.ChannelPairNum; i++ {
+		<-sync
+	}
+	proxy.data.ChannelManager.DeleteChannel(channel)
 }
 
 func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
@@ -72,9 +82,14 @@ func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 		log.Println("connect error:%s", err)
 		return
 	}
-	proxy.channelManager.PutChannelPair(local, remoteConn)
-	go proxy.safeCopy(local, remoteConn)
-	go proxy.safeCopy(remoteConn, local)
+	localUrl := local.RemoteAddr().String()
+	remoteUrl := remoteConn.RemoteAddr().String()
+	sync := make(chan int, 1)
+	channel := structure.Channel{SrcUrl:localUrl, DstUrl:remoteUrl}
+	go proxy.putChannel(&channel)
+	go proxy.safeCopy(local, remoteConn, sync)
+	go proxy.safeCopy(remoteConn, local, sync)
+	go proxy.closeChannel(&channel, sync)
 }
 
 func (proxy *EasyProxy) Clean(url string) {

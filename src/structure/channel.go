@@ -1,18 +1,8 @@
 package structure
 
-import "net"
+const ChannelPairNum = 2
 
 type Channel struct {
-	srcConn net.Conn
-	dstConn net.Conn
-}
-
-func (channel *Channel) UpdateDst(conn net.Conn) {
-	channel.dstConn.Close()
-	channel.dstConn = conn
-}
-
-func (channel *Channel) Close() {
-	channel.srcConn.Close()
-	channel.dstConn.Close()
+	SrcUrl string
+	DstUrl string
 }

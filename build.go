@@ -34,13 +34,21 @@ func main() {
 	}
 }
 
-func build() {
-	file := "./bin/" + Binary
+func execFile() string {
+	return "./bin/" + execName()
+}
+
+func execName() string {
+	name := Binary
 	if runtime.GOOS == "windows" {
-		file += ".exe"
+		name += ".exe"
 	}
-	args := []string{"build"}
-	args = append(args, "-o", file)
+	return name
+}
+
+func build() {
+	args := []string{"build", "-ldflags", "-w -s"}
+	args = append(args, "-o", execFile())
 	args = append(args, PKG)
 	runCommand("go", args...)
 }
@@ -57,5 +65,5 @@ func runCommand(cmd string, args ...string) {
 }
 
 func clean() {
-	runCommand("rm", "-r", "./bin")
+	runCommand("rm", "-f", execFile())
 }

@@ -6,6 +6,8 @@ import (
 	"log"
 	"strings"
 	"reflect"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func HostPortToAddress(host string, port uint16) string {
@@ -44,4 +46,13 @@ func SliceIndex(slice interface{}, element interface{}) int {
 		}
 	}
 	return index
+}
+
+func Debug(open bool) {
+	if open {
+		go func() {
+			http.ListenAndServe("localhost:6060", nil)
+		}()
+		log.Println("curl http://localhost:6060/debug/pprof/ to get more information")
+	}
 }

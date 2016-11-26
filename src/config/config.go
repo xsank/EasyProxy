@@ -13,6 +13,7 @@ type Config struct {
 	Port     uint16 `json:"port"`
 	WebPort  uint16 `json:"webport"`
 	Strategy string `json:"strategy"`
+	Debug    bool `json:"debug"`
 	Backends []structure.Backend `json:"backends"`
 }
 

@@ -4,6 +4,7 @@
   "port": 9527,
   "webport": 7259,
   "strategy": "random",
+  "debug": false,
   "backends": [
     {
       "host": "10.195.33.7",

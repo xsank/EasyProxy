@@ -1,6 +1,9 @@
 package structure
 
-import "errors"
+import (
+	"errors"
+	"github.com/xsank/EasyProxy/src/util"
+)
 
 type ChannelManager struct {
 	channels []Channel
@@ -21,16 +24,12 @@ func (channelManager *ChannelManager) PutChannel(channel *Channel) {
 }
 
 func (channelManager *ChannelManager) DeleteChannel(channel *Channel) {
-	index := 0
-	for i, cnl := range channelManager.channels {
-		if cnl == *channel {
-			index = i
-			break
-		}
+	index := util.SliceIndex(channelManager.channels, *channel)
+	if index >= 0 {
+		channelManager.channels = append(channelManager.channels[:index], channelManager.channels[index + 1:]...)
+		channelManager.deleteMap(channelManager.mapSrc, channel.SrcUrl)
+		channelManager.deleteMap(channelManager.mapDst, channel.DstUrl)
 	}
-	channelManager.channels = append(channelManager.channels[:index], channelManager.channels[index + 1:]...)
-	channelManager.deleteMap(channelManager.mapSrc, channel.SrcUrl)
-	channelManager.deleteMap(channelManager.mapDst, channel.DstUrl)
 }
 
 func (channelManager *ChannelManager) GetChannels() []Channel {

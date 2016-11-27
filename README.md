@@ -35,10 +35,12 @@ go get github.com/xsank/EasyProxy
 go run build.go build
 ```
 The sample config is about mysql proxy, so you can access the mysql database actually at backend
-through the `localhost 9527`, you can easily modify the `default.json` to change the service.
-Also you can `curl localhost:7259/statistic` to get the current connection status. If you want to know
-more runtime debug info about the proxy, you can `curl http://localhost:7259/debug/pprof` to get more details.
-For keep simple, easyproxy only support `poll`,`random`,`iphash` strategies, it would add more if there is a demand.
+through the `localhost 9527`, you can easily modify the `default.json` to change the service.    
+For keep simple, easyproxy only support `poll`,`random`,`iphash` strategies, and the default strategy is `poll`,
+the easyproxy would add more if there is a demand.  
+Besides, you can `curl localhost:7259/statistic` to get the current connection status. If you want to know
+more runtime debug info about the proxy, you can `curl http://localhost:7259/debug/pprof` to get more details.  
+
 
 # License
 Easyproxy is distributed under MIT License.

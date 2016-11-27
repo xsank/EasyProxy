@@ -6,6 +6,9 @@ import (
 	"log"
 	"strings"
 	"reflect"
+	"crypto/md5"
+	"io"
+	"encoding/hex"
 )
 
 func HostPortToAddress(host string, port uint16) string {
@@ -44,4 +47,21 @@ func SliceIndex(slice interface{}, element interface{}) int {
 		}
 	}
 	return index
+}
+
+func Md5String(str string) string {
+	hash := md5.New()
+	io.WriteString(hash, str)
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func IP4ToInt(ip string) int {
+	nums := strings.Split(ip, ".")
+	sum := 0
+	for i := 0; i < len(nums); i++ {
+		n, _ := strconv.Atoi(nums[i])
+		sum += n
+		sum <<= 8
+	}
+	return sum >> 8
 }

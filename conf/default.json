@@ -3,7 +3,7 @@
   "host": "127.0.0.1",
   "port": 9527,
   "webport": 7259,
-  "strategy": "random",
+  "strategy": "poll",
   "backends": [
     {
       "host": "10.195.33.7",

@@ -1,5 +1,5 @@
 package schedule
 
 type Strategy interface {
-	Choose(urls []string) string
+	Choose(client string, servers []string) string
 }

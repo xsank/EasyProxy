@@ -5,11 +5,10 @@ import (
 )
 
 type Random struct {
-
 }
 
-func (strategy *Random) Choose(urls []string) string {
-	length := len(urls)
-	url := urls[int(time.Now().UnixNano()) % length]
+func (strategy *Random) Choose(client string, servers []string) string {
+	length := len(servers)
+	url := servers[int(time.Now().UnixNano()) % length]
 	return url
 }

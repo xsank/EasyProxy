@@ -6,9 +6,9 @@ type Poll struct {
 	counter int
 }
 
-func (strategy *Poll) Choose(urls []string) string {
+func (strategy *Poll) Choose(client string, servers []string) string {
 	strategy.counter = (strategy.counter + 1) % CycleCount
-	length := len(urls)
-	url := urls[strategy.counter % length]
+	length := len(servers)
+	url := servers[strategy.counter % length]
 	return url
 }

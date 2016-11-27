@@ -32,6 +32,8 @@ func (proxy *EasyProxy) setStrategy(name string) {
 		proxy.strategy = new(schedule.Random)
 	case "poll":
 		proxy.strategy = new(schedule.Poll)
+	case "iphash":
+		proxy.strategy = new(schedule.IpHash)
 	default:
 		proxy.strategy = new(schedule.Random)
 	}
@@ -53,8 +55,8 @@ func (proxy *EasyProxy) Check() {
 }
 
 func (proxy *EasyProxy) Dispatch(con net.Conn) {
-	urls := proxy.data.BackendUrls()
-	url := proxy.strategy.Choose(urls)
+	servers := proxy.data.BackendUrls()
+	url := proxy.strategy.Choose(con.RemoteAddr().String(), servers)
 	proxy.transfer(con, url)
 }
 

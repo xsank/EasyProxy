@@ -17,7 +17,6 @@ func main() {
 	log.Init(DefaultLogFile)
 	config, err := config.Load(filepath.Join(homePath, DefaultConfigFile))
 	if err == nil {
-		util.Debug(config.Debug)
 		webServer := new(web.WebServer)
 		webServer.Init(config)
 		webServer.Start()

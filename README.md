@@ -37,8 +37,7 @@ go run build.go build
 The sample config is about mysql proxy, so you can access the mysql database actually at backend
 through the `localhost 9527`, you can easily modify the `default.json` to change the service.
 Also you can `curl localhost:7259/statistic` to get the current connection status. If you want to know
-more debug info about the proxy, you can switch on the `debug` config,
-then you can `curl http://localhost:6060/debug/pprof` to get more details.
+more runtime debug info about the proxy, you can `curl http://localhost:7259/debug/pprof` to get more details.
 
 
 # License

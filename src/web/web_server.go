@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"log"
 	"github.com/xsank/EasyProxy/src/util"
+	_ "net/http/pprof"
 )
 
 type WebServer struct {

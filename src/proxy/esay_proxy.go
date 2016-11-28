@@ -1,13 +1,13 @@
 package proxy
 
 import (
-	"net"
-	"io"
-	"github.com/xsank/EasyProxy/src/proxy/schedule"
-	"time"
-	"log"
 	"github.com/xsank/EasyProxy/src/config"
+	"github.com/xsank/EasyProxy/src/proxy/schedule"
 	"github.com/xsank/EasyProxy/src/structure"
+	"io"
+	"log"
+	"net"
+	"time"
 )
 
 const (
@@ -87,17 +87,17 @@ func (proxy *EasyProxy) closeChannel(channel *structure.Channel, sync chan int) 
 }
 
 func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
-	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime * time.Second)
+	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime*time.Second)
 	if err != nil {
 		local.Close()
 		proxy.Clean(remote)
-		log.Println("connect backend error:%s", err)
+		log.Printf("connect backend error: %v", err)
 		return
 	}
 	localUrl := local.RemoteAddr().String()
 	remoteUrl := remoteConn.RemoteAddr().String()
 	sync := make(chan int, 1)
-	channel := structure.Channel{SrcUrl:localUrl, DstUrl:remoteUrl}
+	channel := structure.Channel{SrcUrl: localUrl, DstUrl: remoteUrl}
 	go proxy.putChannel(&channel)
 	go proxy.safeCopy(local, remoteConn, sync)
 	go proxy.safeCopy(remoteConn, local, sync)

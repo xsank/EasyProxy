@@ -1,13 +1,13 @@
 package proxy
 
 import (
-	"net"
-	"io"
-	"github.com/xsank/EasyProxy/src/proxy/schedule"
-	"time"
-	"log"
 	"github.com/xsank/EasyProxy/src/config"
+	"github.com/xsank/EasyProxy/src/proxy/schedule"
 	"github.com/xsank/EasyProxy/src/structure"
+	"io"
+	"log"
+	"net"
+	"time"
 )
 
 const (
@@ -59,13 +59,14 @@ func (proxy *EasyProxy) isBackendAvailable() bool {
 }
 
 func (proxy *EasyProxy) Dispatch(con net.Conn) {
-	if proxy.isBackendAvailable() {
-		servers := proxy.data.BackendUrls()
-		url := proxy.strategy.Choose(con.RemoteAddr().String(), servers)
-		proxy.transfer(con, url)
-	} else {
+	servers := proxy.data.BackendUrls()
+	url := proxy.strategy.Choose(con.RemoteAddr().String(), servers)
+	// There is no avaliable backend server, just close client connection
+	if url == "" {
 		con.Close()
-		log.Println("no backends available now,please check your server!")
+	}
+	if err := proxy.transfer(con, url); err != nil {
+		con.Close()
 	}
 }
 
@@ -86,22 +87,23 @@ func (proxy *EasyProxy) closeChannel(channel *structure.Channel, sync chan int) 
 	proxy.data.ChannelManager.DeleteChannel(channel)
 }
 
-func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
-	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime * time.Second)
+func (proxy *EasyProxy) transfer(local net.Conn, remote string) error {
+	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime*time.Second)
 	if err != nil {
-		local.Close()
+		log.Println(err)
+		// If error happened, remoteConn is invalid memory address or nil pointer
 		proxy.Clean(remote)
-		log.Println("connect backend error:%s", err)
-		return
+		return err
 	}
 	localUrl := local.RemoteAddr().String()
 	remoteUrl := remoteConn.RemoteAddr().String()
 	sync := make(chan int, 1)
-	channel := structure.Channel{SrcUrl:localUrl, DstUrl:remoteUrl}
+	channel := structure.Channel{SrcUrl: localUrl, DstUrl: remoteUrl}
 	go proxy.putChannel(&channel)
 	go proxy.safeCopy(local, remoteConn, sync)
 	go proxy.safeCopy(remoteConn, local, sync)
 	go proxy.closeChannel(&channel, sync)
+	return nil
 }
 
 func (proxy *EasyProxy) Clean(url string) {

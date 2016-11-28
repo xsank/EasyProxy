@@ -6,8 +6,8 @@
   "strategy": "poll",
   "backends": [
     {
-      "host": "10.195.33.7",
-      "port": 3306
+      "host": "127.0.0.1",
+      "port": 6379
     }
   ]
 }

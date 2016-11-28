@@ -7,8 +7,11 @@ type Poll struct {
 }
 
 func (strategy *Poll) Choose(client string, servers []string) string {
-	strategy.counter = (strategy.counter + 1) % CycleCount
 	length := len(servers)
-	url := servers[strategy.counter % length]
+	if length == 0 {
+		return ""
+	}
+	strategy.counter = (strategy.counter + 1) % CycleCount
+	url := servers[strategy.counter%length]
 	return url
 }

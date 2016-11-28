@@ -1,8 +1,8 @@
 package proxy
 
 import (
-	"github.com/xsank/EasyProxy/src/structure"
 	"github.com/xsank/EasyProxy/src/config"
+	"github.com/xsank/EasyProxy/src/structure"
 )
 
 type ProxyData struct {

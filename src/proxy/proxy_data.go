@@ -41,11 +41,11 @@ func (proxyData ProxyData) BackendUrls() []string {
 }
 
 func (proxyData *ProxyData) cleanBackend(url string) {
-	delete(proxyData.Backends, url)
 	proxyData.Deads[url] = proxyData.Backends[url]
+	delete(proxyData.Backends, url)
 }
 
 func (proxyData *ProxyData) cleanDeadend(url string) {
-	delete(proxyData.Deads, url)
 	proxyData.Backends[url] = proxyData.Deads[url]
+	delete(proxyData.Deads, url)
 }

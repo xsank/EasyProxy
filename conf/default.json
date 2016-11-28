@@ -6,7 +6,7 @@
   "strategy": "poll",
   "backends": [
     {
-      "host": "10.195.33.7",
+      "host": "11.239.169.230",
       "port": 3306
     }
   ]

@@ -54,10 +54,19 @@ func (proxy *EasyProxy) Check() {
 	}
 }
 
+func (proxy *EasyProxy) isBackendAvailable() bool {
+	return len(proxy.data.Backends) > 0
+}
+
 func (proxy *EasyProxy) Dispatch(con net.Conn) {
-	servers := proxy.data.BackendUrls()
-	url := proxy.strategy.Choose(con.RemoteAddr().String(), servers)
-	proxy.transfer(con, url)
+	if proxy.isBackendAvailable() {
+		servers := proxy.data.BackendUrls()
+		url := proxy.strategy.Choose(con.RemoteAddr().String(), servers)
+		proxy.transfer(con, url)
+	} else {
+		con.Close()
+		log.Println("no backends available now,please check your server!")
+	}
 }
 
 func (proxy *EasyProxy) safeCopy(from net.Conn, to net.Conn, sync chan int) {
@@ -80,8 +89,9 @@ func (proxy *EasyProxy) closeChannel(channel *structure.Channel, sync chan int) 
 func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 	remoteConn, err := net.DialTimeout("tcp", remote, DefaultTimeoutTime * time.Second)
 	if err != nil {
-		proxy.Clean(remoteConn.RemoteAddr().String())
-		log.Println("connect error:%s", err)
+		local.Close()
+		proxy.Clean(remote)
+		log.Println("connect backend error:%s", err)
 		return
 	}
 	localUrl := local.RemoteAddr().String()

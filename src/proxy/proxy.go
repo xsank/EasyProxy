@@ -1,8 +1,8 @@
 package proxy
 
 import (
-	"net"
 	"github.com/xsank/EasyProxy/src/config"
+	"net"
 )
 
 type Proxy interface {

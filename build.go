@@ -7,15 +7,18 @@ import (
 	"runtime"
 	"strings"
 	"os/exec"
+	"io"
 )
 
 const (
+	BinaryDir = "./bin/"
 	Binary = "easyproxy"
+	ConfDir = "./conf/"
+	Config = "default.json"
 	PKG = "./src"
 )
 
 func main() {
-	log.Println("start building...")
 	flag.Parse()
 	if flag.NArg() == 0 {
 		log.Println("please use go run build.go to build")
@@ -35,7 +38,11 @@ func main() {
 }
 
 func execFile() string {
-	return "./bin/" + execName()
+	return BinaryDir + execName()
+}
+
+func confFile() string {
+	return ConfDir + Config
 }
 
 func execName() string {
@@ -47,10 +54,33 @@ func execName() string {
 }
 
 func build() {
+	log.Println("start building...")
 	args := []string{"build", "-ldflags", "-w -s"}
 	args = append(args, "-o", execFile())
 	args = append(args, PKG)
 	runCommand("go", args...)
+	copyConf()
+}
+
+func copyConf() {
+	DstDir := BinaryDir + ConfDir
+	os.Mkdir(DstDir, os.ModePerm)
+	src, err := os.Open(confFile())
+	if err != nil {
+		log.Println("cannot open file:", err)
+		return
+	}
+	defer src.Close()
+	dst, err := os.Create(DstDir + Config)
+	if err != nil {
+		log.Println("create conf file failed:", err)
+		return
+	}
+	defer dst.Close()
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		log.Println("copy conf failed:", err)
+	}
 }
 
 func runCommand(cmd string, args ...string) {
@@ -65,5 +95,9 @@ func runCommand(cmd string, args ...string) {
 }
 
 func clean() {
-	runCommand("rm", "-f", execFile())
+	log.Println("start cleaning...")
+	err := os.RemoveAll(BinaryDir)
+	if err != nil {
+		log.Println("clean files failed:", err)
+	}
 }

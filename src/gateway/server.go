@@ -35,7 +35,7 @@ func (server ProxyServer) Address() string {
 func (server *ProxyServer) Start() {
 	local, err := net.Listen("tcp", server.Address())
 	if err != nil {
-		log.Panic("proxy server start error:$s", err)
+		log.Panic("proxy server start error:", err)
 	}
 	log.Println("easyproxy server start ok")
 	defer local.Close()

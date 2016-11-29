@@ -3,6 +3,7 @@ package proxy
 import (
 	"github.com/xsank/EasyProxy/src/structure"
 	"github.com/xsank/EasyProxy/src/config"
+	"sync"
 )
 
 type ProxyData struct {
@@ -12,6 +13,7 @@ type ProxyData struct {
 	Backends       map[string]structure.Backend
 	Deads          map[string]structure.Backend
 	ChannelManager *structure.ChannelManager
+	mutex          *sync.RWMutex
 }
 
 func (proxyData *ProxyData) Init(config *config.Config) {
@@ -21,6 +23,7 @@ func (proxyData *ProxyData) Init(config *config.Config) {
 	proxyData.ChannelManager = new(structure.ChannelManager)
 	proxyData.ChannelManager.Init()
 	proxyData.setBackends(config.Backends)
+	proxyData.mutex = new(sync.RWMutex)
 }
 
 func (proxyData *ProxyData) setBackends(backends []structure.Backend) {
@@ -32,7 +35,9 @@ func (proxyData *ProxyData) setBackends(backends []structure.Backend) {
 }
 
 func (proxyData ProxyData) BackendUrls() []string {
+	proxyData.mutex.RLock()
 	_map := proxyData.Backends
+	defer proxyData.mutex.RUnlock()
 	keys := make([]string, 0, len(_map))
 	for k := range _map {
 		keys = append(keys, k)
@@ -41,11 +46,15 @@ func (proxyData ProxyData) BackendUrls() []string {
 }
 
 func (proxyData *ProxyData) cleanBackend(url string) {
+	proxyData.mutex.Lock()
 	proxyData.Deads[url] = proxyData.Backends[url]
 	delete(proxyData.Backends, url)
+	defer proxyData.mutex.Unlock()
 }
 
 func (proxyData *ProxyData) cleanDeadend(url string) {
+	proxyData.mutex.Lock()
 	proxyData.Backends[url] = proxyData.Deads[url]
 	delete(proxyData.Deads, url)
+	defer proxyData.mutex.Unlock()
 }

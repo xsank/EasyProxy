@@ -35,8 +35,9 @@ func (proxy *EasyProxy) setStrategy(name string) {
 	case "iphash":
 		proxy.strategy = new(schedule.IpHash)
 	default:
-		proxy.strategy = new(schedule.Random)
+		proxy.strategy = new(schedule.Poll)
 	}
+	proxy.strategy.Init()
 }
 
 func (proxy *EasyProxy) Check() {

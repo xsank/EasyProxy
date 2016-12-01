@@ -58,3 +58,15 @@ func (proxyData *ProxyData) cleanDeadend(url string) {
 	delete(proxyData.Deads, url)
 	defer proxyData.mutex.Unlock()
 }
+
+func cleanMap(_map map[string]structure.Backend) {
+	for k := range _map {
+		delete(_map, k)
+	}
+}
+
+func (proxyData *ProxyData) Clean() {
+	cleanMap(proxyData.Backends)
+	cleanMap(proxyData.Deads)
+	proxyData.ChannelManager.Clean()
+}

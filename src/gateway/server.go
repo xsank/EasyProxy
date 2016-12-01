@@ -12,9 +12,10 @@ import (
 const DefaultHeartBeatTime = 10
 
 type ProxyServer struct {
-	host  string
-	port  uint16
-	proxy proxy.Proxy
+	host     string
+	port     uint16
+	listener net.Listener
+	proxy    proxy.Proxy
 }
 
 func (server *ProxyServer) Init(config *config.Config) {
@@ -38,10 +39,11 @@ func (server *ProxyServer) Start() {
 		log.Panic("proxy server start error:", err)
 	}
 	log.Println("easyproxy server start ok")
-	defer local.Close()
+	server.listener = local
+	defer server.listener.Close()
 	server.heartBeat()
 	for {
-		con, err := local.Accept()
+		con, err := server.listener.Accept()
 		if (err == nil) {
 			go server.proxy.Dispatch(con)
 		} else {
@@ -50,7 +52,7 @@ func (server *ProxyServer) Start() {
 	}
 }
 
-func (server ProxyServer) heartBeat() {
+func (server *ProxyServer) heartBeat() {
 	ticker := time.NewTicker(time.Second * DefaultHeartBeatTime)
 	go func() {
 		for {
@@ -60,6 +62,12 @@ func (server ProxyServer) heartBeat() {
 			}
 		}
 	}()
+}
+
+func (server *ProxyServer) Stop() {
+	server.listener.Close()
+	server.proxy.Close()
+	log.Println("easyproxy server stop ok")
 }
 
 

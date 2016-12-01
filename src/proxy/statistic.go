@@ -41,8 +41,8 @@ func Record() {
 		statistic.Services[server.Url()] = Service{Url:server.Url(), Count:0, Status:"off"}
 	}
 	for _, channel := range statistic.proxyData.ChannelManager.GetChannels() {
-		host := util.UrlToHost(channel.SrcUrl)
-		serverUrl := channel.DstUrl
+		host := util.UrlToHost(channel.SrcUrl())
+		serverUrl := channel.DstUrl()
 		var client Client
 		var service Service
 		if _, ok := statistic.Clients[host]; ok {

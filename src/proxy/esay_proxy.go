@@ -95,10 +95,8 @@ func (proxy *EasyProxy) transfer(local net.Conn, remote string) {
 		log.Println("connect backend error:%s", err)
 		return
 	}
-	localUrl := local.RemoteAddr().String()
-	remoteUrl := remoteConn.RemoteAddr().String()
 	sync := make(chan int, 1)
-	channel := structure.Channel{SrcUrl:localUrl, DstUrl:remoteUrl}
+	channel := structure.Channel{SrcConn:local, DstConn:remoteConn}
 	go proxy.putChannel(&channel)
 	go proxy.safeCopy(local, remoteConn, sync)
 	go proxy.safeCopy(remoteConn, local, sync)
@@ -111,4 +109,8 @@ func (proxy *EasyProxy) Clean(url string) {
 
 func (proxy *EasyProxy) Recover(url string) {
 	proxy.data.cleanDeadend(url)
+}
+
+func (proxy *EasyProxy) Close() {
+	proxy.data.Clean()
 }

@@ -23,8 +23,8 @@ func (channelManager *ChannelManager) Init() {
 func (channelManager *ChannelManager) PutChannel(channel *Channel) {
 	channelManager.mutex.Lock()
 	channelManager.channels = append(channelManager.channels, *channel)
-	channelManager.mapSrc[channel.SrcUrl] = channel
-	channelManager.mapDst[channel.DstUrl] = channel
+	channelManager.mapSrc[channel.SrcUrl()] = channel
+	channelManager.mapDst[channel.DstUrl()] = channel
 	defer channelManager.mutex.Unlock()
 }
 
@@ -33,8 +33,8 @@ func (channelManager *ChannelManager) DeleteChannel(channel *Channel) {
 	index := util.SliceIndex(channelManager.channels, *channel)
 	if index >= 0 {
 		channelManager.channels = append(channelManager.channels[:index], channelManager.channels[index + 1:]...)
-		channelManager.deleteMap(channelManager.mapSrc, channel.SrcUrl)
-		channelManager.deleteMap(channelManager.mapDst, channel.DstUrl)
+		deleteMap(channelManager.mapSrc, channel.SrcUrl())
+		deleteMap(channelManager.mapDst, channel.DstUrl())
 	}
 	defer channelManager.mutex.Unlock()
 }
@@ -55,9 +55,19 @@ func (channelManager *ChannelManager) Check() (error, error) {
 	return srcErr, dstErr
 }
 
-func (channelManager *ChannelManager) deleteMap(_map map[string]*Channel, url string) {
+func deleteMap(_map map[string]*Channel, url string) {
 	_, ok := _map[url]
 	if ok {
 		delete(_map, url)
 	}
+}
+
+func (channelManager *ChannelManager) Clean() {
+	for _, channel := range channelManager.channels {
+		deleteMap(channelManager.mapSrc, channel.SrcUrl())
+		deleteMap(channelManager.mapDst, channel.DstUrl())
+		channel.SrcConn.Close()
+		channel.DstConn.Close()
+	}
+	channelManager.channels = channelManager.channels[:0]
 }

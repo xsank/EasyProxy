@@ -11,4 +11,5 @@ type Proxy interface {
 	Clean(url string)
 	Recover(url string)
 	Dispatch(con net.Conn)
+	Close()
 }

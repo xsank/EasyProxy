@@ -15,6 +15,7 @@ type ProxyServer struct {
 	beattime int
 	listener net.Listener
 	proxy    proxy.Proxy
+	on       bool
 }
 
 func (server *ProxyServer) Init(config *config.Config) {
@@ -40,9 +41,10 @@ func (server *ProxyServer) Start() {
 	}
 	log.Println("easyproxy server start ok")
 	server.listener = local
+	server.on = true
 	defer server.listener.Close()
 	server.heartBeat()
-	for {
+	for server.on == true {
 		con, err := server.listener.Accept()
 		if (err == nil) {
 			go server.proxy.Dispatch(con)
@@ -67,6 +69,7 @@ func (server *ProxyServer) heartBeat() {
 func (server *ProxyServer) Stop() {
 	server.listener.Close()
 	server.proxy.Close()
+	server.on = false
 	log.Println("easyproxy server stop ok")
 }
 

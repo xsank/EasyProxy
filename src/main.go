@@ -53,13 +53,13 @@ func (easyServer *EasyServer) Stop() {
 }
 
 func main() {
-	runtime.GOMAXPROCS(2 * runtime.NumCPU())
-
 	homePath := util.HomePath()
 	log.Init(DefaultLogFile)
 	config, err := config.Load(filepath.Join(homePath, DefaultConfigFile))
 
 	if err == nil {
+		runtime.GOMAXPROCS(config.MaxProcessor)
+
 		easyServer := CreateEasyServer()
 		easyServer.Init(config)
 		easyServer.Start()

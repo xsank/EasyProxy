@@ -9,11 +9,10 @@ import (
 	"github.com/xsank/EasyProxy/src/config"
 )
 
-const DefaultHeartBeatTime = 10
-
 type ProxyServer struct {
 	host     string
 	port     uint16
+	beattime int
 	listener net.Listener
 	proxy    proxy.Proxy
 }
@@ -21,6 +20,7 @@ type ProxyServer struct {
 func (server *ProxyServer) Init(config *config.Config) {
 	server.host = config.Host
 	server.port = config.Port
+	server.beattime = config.Heartbeat
 	server.setProxy(config)
 }
 
@@ -53,7 +53,7 @@ func (server *ProxyServer) Start() {
 }
 
 func (server *ProxyServer) heartBeat() {
-	ticker := time.NewTicker(time.Second * DefaultHeartBeatTime)
+	ticker := time.NewTicker(time.Second * time.Duration(server.beattime))
 	go func() {
 		for {
 			select {

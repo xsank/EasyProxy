@@ -8,12 +8,14 @@ import (
 )
 
 type Config struct {
-	Service  string `json:"service"`
-	Host     string `json:"host"`
-	Port     uint16 `json:"port"`
-	WebPort  uint16 `json:"webport"`
-	Strategy string `json:"strategy"`
-	Backends []structure.Backend `json:"backends"`
+	Service      string `json:"service"`
+	Host         string `json:"host"`
+	Port         uint16 `json:"port"`
+	WebPort      uint16 `json:"webport"`
+	Strategy     string `json:"strategy"`
+	Heartbeat    int `json:"heartbeat"`
+	MaxProcessor int `json:"maxprocessor"`
+	Backends     []structure.Backend `json:"backends"`
 }
 
 func Load(filename string) (*Config, error) {

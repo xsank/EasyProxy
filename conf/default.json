@@ -4,6 +4,8 @@
   "port": 9527,
   "webport": 7259,
   "strategy": "poll",
+  "heartbeat": 60,
+  "maxprocessor": 1,
   "backends": [
     {
       "host": "11.239.169.230",

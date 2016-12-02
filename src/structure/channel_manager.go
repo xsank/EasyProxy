@@ -66,8 +66,7 @@ func (channelManager *ChannelManager) Clean() {
 	for _, channel := range channelManager.channels {
 		deleteMap(channelManager.mapSrc, channel.SrcUrl())
 		deleteMap(channelManager.mapDst, channel.DstUrl())
-		channel.SrcConn.Close()
-		channel.DstConn.Close()
+		channel.Close()
 	}
 	channelManager.channels = channelManager.channels[:0]
 }

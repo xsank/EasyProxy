@@ -27,16 +27,7 @@ func (proxy *EasyProxy) Init(config *config.Config) {
 }
 
 func (proxy *EasyProxy) setStrategy(name string) {
-	switch name {
-	case "random":
-		proxy.strategy = new(schedule.Random)
-	case "poll":
-		proxy.strategy = new(schedule.Poll)
-	case "iphash":
-		proxy.strategy = new(schedule.IpHash)
-	default:
-		proxy.strategy = new(schedule.Poll)
-	}
+	proxy.strategy = schedule.GetStrategy(name)
 	proxy.strategy.Init()
 }
 

@@ -16,3 +16,8 @@ func (channel *Channel) SrcUrl() string {
 func (channel *Channel) DstUrl() string {
 	return channel.DstConn.RemoteAddr().String()
 }
+
+func (channel *Channel) Close() {
+	channel.SrcConn.Close()
+	channel.DstConn.Close()
+}

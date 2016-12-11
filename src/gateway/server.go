@@ -3,8 +3,8 @@ package gateway
 import (
 	"net"
 	"log"
-	"github.com/xsank/EasyProxy/src/proxy"
 	"time"
+	"github.com/xsank/EasyProxy/src/proxy"
 	"github.com/xsank/EasyProxy/src/util"
 	"github.com/xsank/EasyProxy/src/config"
 )
@@ -19,6 +19,7 @@ type ProxyServer struct {
 }
 
 func (server *ProxyServer) Init(config *config.Config) {
+	server.on = false
 	server.host = config.Host
 	server.port = config.Port
 	server.beattime = config.Heartbeat
@@ -42,9 +43,8 @@ func (server *ProxyServer) Start() {
 	log.Println("easyproxy server start ok")
 	server.listener = local
 	server.on = true
-	defer server.listener.Close()
 	server.heartBeat()
-	for server.on == true {
+	for server.on {
 		con, err := server.listener.Accept()
 		if (err == nil) {
 			go server.proxy.Dispatch(con)
@@ -52,6 +52,7 @@ func (server *ProxyServer) Start() {
 			log.Println("client connect server error:", err)
 		}
 	}
+	defer server.listener.Close()
 }
 
 func (server *ProxyServer) heartBeat() {

@@ -34,12 +34,11 @@ func (easyServer *EasyServer)Init(config *config.Config) {
 }
 
 func (easyServer *EasyServer)Start() {
-	easyServer.catchStopSignal()
 	easyServer.webServer.Start()
 	easyServer.proxyServer.Start()
 }
 
-func (easyServer *EasyServer) catchStopSignal() {
+func (easyServer *EasyServer) CatchStopSignal() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGKILL)
 	go func() {
@@ -62,6 +61,7 @@ func main() {
 
 		easyServer := CreateEasyServer()
 		easyServer.Init(config)
+		easyServer.CatchStopSignal()
 		easyServer.Start()
 	}
 }

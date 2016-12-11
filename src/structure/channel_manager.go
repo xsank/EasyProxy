@@ -1,9 +1,9 @@
 package structure
 
 import (
+	"sync"
 	"errors"
 	"github.com/xsank/EasyProxy/src/util"
-	"sync"
 )
 
 type ChannelManager struct {

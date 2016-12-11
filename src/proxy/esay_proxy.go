@@ -3,9 +3,9 @@ package proxy
 import (
 	"net"
 	"io"
-	"github.com/xsank/EasyProxy/src/proxy/schedule"
 	"time"
 	"log"
+	"github.com/xsank/EasyProxy/src/proxy/schedule"
 	"github.com/xsank/EasyProxy/src/config"
 	"github.com/xsank/EasyProxy/src/structure"
 )

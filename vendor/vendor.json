@@ -1,6 +1,6 @@
 {
-	"comment": "",
-	"ignore": "test",
+	"comment": "now the easyproxy do not need the third partition",
+	"ignore": "",
 	"package": [],
 	"rootPath": "github.com/xsank/EasyProxy"
 }

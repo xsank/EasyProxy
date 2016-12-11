@@ -1,16 +1,16 @@
 package main
 
 import (
-	gw"github.com/xsank/EasyProxy/src/gateway"
-	"github.com/xsank/EasyProxy/src/config"
-	"github.com/xsank/EasyProxy/src/util"
+	"os"
 	"path/filepath"
-	"github.com/xsank/EasyProxy/src/log"
-	"github.com/xsank/EasyProxy/src/web"
 	"runtime"
 	"syscall"
 	"os/signal"
-	"os"
+	"github.com/xsank/EasyProxy/src/web"
+	"github.com/xsank/EasyProxy/src/config"
+	"github.com/xsank/EasyProxy/src/util"
+	"github.com/xsank/EasyProxy/src/log"
+	gw"github.com/xsank/EasyProxy/src/gateway"
 )
 
 const
@@ -52,8 +52,9 @@ func (easyServer *EasyServer) Stop() {
 }
 
 func main() {
-	homePath := util.HomePath()
 	log.Init(DefaultLogFile)
+	
+	homePath := util.HomePath()
 	config, err := config.Load(filepath.Join(homePath, DefaultConfigFile))
 
 	if err == nil {

@@ -46,7 +46,7 @@ func (server *ProxyServer) Start() {
 	server.heartBeat()
 	for server.on {
 		con, err := server.listener.Accept()
-		if (err == nil) {
+		if err == nil {
 			go server.proxy.Dispatch(con)
 		} else {
 			log.Println("client connect server error:", err)

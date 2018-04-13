@@ -1,10 +1,10 @@
 package config
 
 import (
-	"os"
 	"encoding/json"
 	"log"
 	"github.com/xsank/EasyProxy/src/structure"
+	"io/ioutil"
 )
 
 type Config struct {
@@ -20,15 +20,13 @@ type Config struct {
 
 func Load(filename string) (*Config, error) {
 	var config Config
-	file, err := os.Open(filename)
+	file, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Println("load config failed:", err)
 	} else {
-		buff := make([]byte, 1024)
-		end, _ := file.Read(buff)
-		err = json.Unmarshal(buff[:end], &config)
+		err = json.Unmarshal(file, &config)
 		if err != nil {
-			log.Println("decode json config failed:", err)
+			log.Println("xdecode json config failed:", err)
 		}
 	}
 	log.Println("success load config file:", filename)

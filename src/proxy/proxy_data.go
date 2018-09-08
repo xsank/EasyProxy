@@ -47,16 +47,18 @@ func (proxyData ProxyData) BackendUrls() []string {
 
 func (proxyData *ProxyData) cleanBackend(url string) {
 	proxyData.mutex.Lock()
-	proxyData.Deads[url] = proxyData.Backends[url]
-	delete(proxyData.Backends, url)
+	if backEnd, isHas := proxyData.Backends[url]; isHas {
+		proxyData.Deads[url] = backEnd
+		delete(proxyData.Backends, url)
+	}
 	defer proxyData.mutex.Unlock()
 }
 
 func (proxyData *ProxyData) cleanDeadend(url string) {
 	proxyData.mutex.Lock()
-	if backEnd, isHas := proxyData.Backends[url]; isHas {
-		proxyData.Deads[url] = backEnd
-		delete(proxyData.Backends, url)
+	if backEnd, isHas := proxyData.Deads[url]; isHas {
+		proxyData.Backends[url] = backEnd
+		delete(proxyData.Deads, url)
 	}
 	defer proxyData.mutex.Unlock()
 }

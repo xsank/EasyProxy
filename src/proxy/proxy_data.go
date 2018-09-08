@@ -54,8 +54,10 @@ func (proxyData *ProxyData) cleanBackend(url string) {
 
 func (proxyData *ProxyData) cleanDeadend(url string) {
 	proxyData.mutex.Lock()
-	proxyData.Backends[url] = proxyData.Deads[url]
-	delete(proxyData.Deads, url)
+	if backEnd, isHas := proxyData.Backends[url]; isHas {
+		proxyData.Deads[url] = backEnd
+		delete(proxyData.Backends, url)
+	}
 	defer proxyData.mutex.Unlock()
 }
 
